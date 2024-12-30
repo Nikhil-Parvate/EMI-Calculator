@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> EMI Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/flowbite/dist/flowbite.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+        body {
+      /* font-family: Arial, sans-serif; */
+    }
+
+    .stoppersContainer{
+      margin-top: -8px;
+    }
+
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto my-10 p-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-2xl font-bold text-center mb-8">EMI Calculator for Home Loan, Car Loan & Personal Loan in India </h1>
+    
+    <!-- Tabs -->
+    <div class="mb-6">
+      <ul class="flex flex-wrap justify-center border-b" role="tablist">
+        <li class="mr-2" onclick="showTab('homeLoan')">
+          <button class="tab-link px-4 py-2 text-gray-500 hover:text-blue-500 font-medium" data-tab="homeLoan">Home Loan</button>
+        </li>
+        <li class="mr-2" onclick="showTab('personalLoan')">
+          <button class="tab-link px-4 py-2 text-gray-500 hover:text-blue-500 font-medium" data-tab="personalLoan">Personal Loan</button>
+        </li>
+        <li class="mr-2" onclick="showTab('carLoan')">
+          <button class="tab-link px-4 py-2 text-gray-500 hover:text-blue-500 font-medium" data-tab="carLoan">Car Loan</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Loan Input Section -->
+     <div class="flex"  >
+        <div class="w-3/6 p-6" >
+            <div id="loanInput" class="space-y-10">
+                <div id="load-amount" >
+                  <div class="flex justify-center items-center gap-2 mb-2" >
+                    <label for="loanAmount" class="block text-base font-medium ">Loan Amount</label>
+                    <input type="number" class="text-base text-gray-800 text-center" id="loanAmountDisplay" value=""
+                    onchange="range_updateDisplay(this,'loanAmount')">
+                  </div>
+                  
+                  <div>
+                    <input type="range" id="loanAmount" min="100000" max="20000000" step="10000" value="2500000" class="w-full"
+                    onchange="updateDisplay(this,'loanAmountDisplay')" >
+                    <div class="stoppersContainer flex justify-between">
+                        <span class="stopper" >₹1L</span>
+                        <span class="stopper" >₹50L</span>
+                        <span class="stopper" >₹1cr</span>
+                        <span class="stopper" >₹1.50cr</span>
+                        <span class="stopper" >₹2cr</span>
+                      </div>
+                  </div>
+                </div>
+
+                <div id="interest-Rate">
+                  <div class="flex justify-center items-center gap-2 mb-2" >
+                    <label for="interestRate" class="block text-base font-medium">Interest Rate (%)</label>
+                    <input type="number" class="text-base text-gray-800 text-center"id="interestRateDisplay" value="" 
+                    onchange="range_updateDisplay(this,'interestRate')">
+                  </div>
+                  
+                  <div>
+                    <input type="range" id="interestRate" min="5" max="20" step="0.01" value="1" class="w-full" 
+                    onchange="updateDisplay(this,'interestRateDisplay')">
+                    <div class="stoppersContainer flex justify-between">
+                        <span class="stopper">5.00%</span>
+                        <span class="stopper">7.50%</span>
+                        <span class="stopper">10.00%</span>
+                        <span class="stopper">12.50%</span>
+                        <span class="stopper">15.00%</span>
+                        <span class="stopper">17.50%</span>
+                        <span class="stopper">20.00%</span>
+                      </div>
+                  </div>
+                </div>
+
+                <div id="loan-Tenure">
+                  <div class="flex justify-center items-center gap-2 mb-2" >
+                    <label for="tenure" class="block text-base font-medium">Loan Tenure (Years)</label>
+                    <input type="number" class="text-base text-gray-800 text-center"id="tenureDisplay" value="" 
+                    onchange="range_updateDisplay(this,'tenure')">
+                  </div>
+
+                  <div>
+                    <input type="range" id="tenure" min="1" max="30" step="1" value="1" class="w-full" 
+                    onchange="updateDisplay(this,'tenureDisplay')">
+                    <div class="stoppersContainer flex justify-between">
+                        <span class="stopper">1</span>
+                        <span class="stopper">5</span>
+                        <span class="stopper">10</span>
+                        <span class="stopper">15</span>
+                        <span class="stopper">20</span>
+                        <span class="stopper">25</span>
+                        <span class="stopper">30</span>
+                      </div>
+                  </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="mt-6">
+                  <button id="calculateBtn" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" 
+                  onclick="calculateEMI()" >
+                    Calculate EMI
+                  </button>
+                </div>
+
+              </div>
+        </div>
+
+        <div class="w-3/6 p-4">
+            <h2 class="text-lg font-bold mb-4">Results</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-gray-100 p-4 rounded-lg text-center">
+                <h3 class="text-sm font-medium text-gray-500">Loan EMI</h3>
+                <p class="text-xl font-bold text-green-500">₹<span id="emiResult">0</span></p>
+              </div>
+              <div class="bg-gray-100 p-4 rounded-lg text-center">
+                <h3 class="text-sm font-medium text-gray-500">Total Interest Payable</h3>
+                <p class="text-xl font-bold text-orange-500">₹<span id="totalInterest">0</span></p>
+              </div>
+              <div class="bg-gray-100 p-4 rounded-lg text-center">
+                <h3 class="text-sm font-medium text-gray-500">Total Payment <br>(Principal + Interest)</h3>
+                <p class="text-xl font-bold text-blue-500">₹<span id="totalPayment">0</span></p>
+              </div>
+            </div>
+
+                  <!-- Pie Chart -->
+      <div class="mt-6">
+        <h3 class="text-lg font-bold mb-4 text-center">Principal Amount vs Total Interest</h3>
+        <div class="flex justify-center h-60"  >
+          <canvas id="pieChart" style="width: 100px; height: 100px;" ></canvas>
+        </div>
+      </div>
+      
+        </div>
+
+
+
+     </div>
+
+
+    <!-- Results Section -->
+    <div id="results" class="mt-8 hidden">
+
+
+      <!-- EMI Table -->
+      <div class="mt-6 overflow-x-auto">
+        <h3 class="text-lg font-bold mb-4">Monthly EMI Breakdown</h3>
+        <table class="w-full border-collapse border border-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="border p-2">Month</th>
+              <th class="border p-2">Principal</th>
+              <th class="border p-2">Interest</th>
+              <th class="border p-2">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="emiTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/flowbite/dist/flowbite.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="script.js"></script>
+
+  <script>
+    
+  </script>
+</body>
+</html>
